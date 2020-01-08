@@ -38,6 +38,12 @@ export class TasksService {
     return task;
   }
 
+  updateTaskStatus(id: string, status: TaskStatus) {
+    const [task, _] = this.findTaskById(id);
+    task.status = status;
+    return { ...task };
+  }
+
   private findTaskById(id: string): [Task, number] {
     const taskIndex = this.tasks.findIndex(t => t.id === id);
     const task = this.tasks[taskIndex];
