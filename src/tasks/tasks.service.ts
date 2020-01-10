@@ -46,9 +46,6 @@ export class TasksService {
 
   deleteTask(id: string) {
     const [task, taskIndex] = this.findTaskById(id);
-    if (!task) {
-      throw new NotFoundException('Task not found');
-    }
     this.tasks.splice(taskIndex, 1);
     return task;
   }
