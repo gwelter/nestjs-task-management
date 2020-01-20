@@ -7,7 +7,21 @@ import { GetTasksFilterDTO } from './dto/get-tasks-filter.dto';
 @EntityRepository(Task)
 export class TaskRepository extends Repository<Task> {
   async getTasks(filterDto: GetTasksFilterDTO): Promise<Task[]> {
-    return await this.find();
+    const { status, search } = filterDto;
+    const query = this.createQueryBuilder('tasks');
+
+    if (status) {
+      query.andWhere('tasks.status = :status', { status });
+    }
+
+    if (search) {
+      query.andWhere(
+        '(tasks.title LIKE :search OR tasks.description LIKE :search)',
+        { search: `%${search}%` },
+      );
+    }
+
+    return await query.getMany();
   }
 
   async createTask(createTaskDto: CreateTaskDTO): Promise<Task> {
