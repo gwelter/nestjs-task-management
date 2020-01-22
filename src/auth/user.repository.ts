@@ -9,9 +9,7 @@ import {
 
 @EntityRepository(User)
 export class UserRepository extends Repository<User> {
-  async signUp(authCredentialsDto: AuthCredentialsDto): Promise<void> {
-    const { username, password } = authCredentialsDto;
-
+  async signUp({ username, password }: AuthCredentialsDto): Promise<void> {
     const user = new User();
     user.username = username;
     user.salt = await bcrypt.genSalt();
@@ -26,6 +24,16 @@ export class UserRepository extends Repository<User> {
       } else {
         throw new InternalServerErrorException();
       }
+    }
+  }
+
+  async validateUserPassword({
+    username,
+    password,
+  }: AuthCredentialsDto): Promise<string | void> {
+    const user = await this.findOne({ username });
+    if (user && (await user.validatePassword(password))) {
+      return user.username;
     }
   }
 
